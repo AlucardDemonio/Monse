@@ -25,6 +25,7 @@ width:200%;
 height:200%;
 background:radial-gradient(circle,rgba(255,255,255,0.2),transparent 60%);
 animation:moveLight 10s infinite linear;
+pointer-events:none;
 }
 @keyframes moveLight{
 0%{transform:translate(-20%,-20%)}
@@ -37,6 +38,7 @@ animation:moveLight 10s infinite linear;
 position:absolute;
 font-size:18px;
 animation:floatUp linear infinite;
+pointer-events:none;
 }
 @keyframes floatUp{
 0%{transform:translateY(100vh)}
@@ -61,7 +63,7 @@ z-index:2;
 }
 @keyframes float{50%{transform:translateY(-10px)}}
 
-/* carta animada */
+/* carta */
 .letter{
 display:none;
 background:white;
@@ -76,12 +78,14 @@ font-size:14px;
 transform:scaleY(0);
 transform-origin:top;
 animation:openLetter 0.8s forwards;
+position:relative;
+z-index:5;
 }
 @keyframes openLetter{
 to{transform:scaleY(1)}
 }
 
-/* texto escribiéndose */
+/* typing */
 .typing{
 white-space:pre-line;
 border-right:2px solid pink;
@@ -91,7 +95,7 @@ animation:blink 0.7s infinite;
 50%{border-color:transparent}
 }
 
-/* nombre brillante */
+/* nombre brillo */
 .name{
 background:linear-gradient(90deg,#ff4da6,#ff99cc,#ff4da6);
 background-size:200%;
@@ -110,6 +114,8 @@ font-size:50px;
 margin-top:15px;
 cursor:pointer;
 text-align:center;
+position:relative;
+z-index:10; /* 🔥 CLAVE */
 }
 
 /* texto clic */
@@ -124,6 +130,7 @@ margin-top:10px;
 position:absolute;
 font-size:20px;
 animation:boom 1s forwards;
+pointer-events:none;
 }
 @keyframes boom{
 to{transform:scale(2);opacity:0}
@@ -172,11 +179,11 @@ Esto fue hecho con mucho cariño para ti 💛
 Atentamente B
 `;
 
-function escribirTexto(elemento, texto, velocidad=35){
+function escribirTexto(el, texto, velocidad=35){
 let i=0;
 function escribir(){
 if(i < texto.length){
-elemento.innerHTML += texto.charAt(i);
+el.innerHTML += texto.charAt(i);
 i++;
 setTimeout(escribir, velocidad);
 }
