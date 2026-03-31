@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Para Monse 🎀</title>
+<title>Para Monse 💖</title>
 
 <style>
 body{
@@ -15,6 +15,12 @@ align-items:center;
 background:linear-gradient(135deg,#ffd6e7,#fff0f6);
 font-family:'Segoe UI',cursive;
 overflow:hidden;
+}
+
+/* blur fondo */
+.blur{
+filter:blur(8px);
+transition:0.5s;
 }
 
 /* partículas */
@@ -29,7 +35,12 @@ pointer-events:none;
 100%{transform:translateY(-10vh)}
 }
 
-/* caja */
+/* contenedor */
+#inicio{
+text-align:center;
+}
+
+/* regalo */
 .box{
 width:120px;
 height:120px;
@@ -43,31 +54,71 @@ font-size:40px;
 color:white;
 box-shadow:0 10px 30px rgba(0,0,0,0.2);
 animation:float 2s infinite;
-z-index:5;
+margin:auto;
 }
 @keyframes float{50%{transform:translateY(-10px)}}
 
-/* carta */
-.letter{
+/* mensaje */
+.msg{
 display:none;
 background:white;
 padding:20px;
 border-radius:20px;
-width:85%;
-max-width:320px;
-box-shadow:0 10px 30px rgba(0,0,0,0.15);
-font-style:italic;
-text-align:center;
-font-size:14px;
-transform:scaleY(0);
-transform-origin:top;
-opacity:0;
-z-index:6;
+margin-top:20px;
 }
 
-@keyframes openLetter{
-0%{transform:scaleY(0); opacity:0;}
-100%{transform:scaleY(1); opacity:1;}
+/* botón */
+.btn{
+margin-top:15px;
+padding:12px 20px;
+background:#ff4da6;
+color:white;
+border:none;
+border-radius:25px;
+font-size:18px;
+cursor:pointer;
+}
+
+/* vela */
+.vela{
+font-size:60px;
+transition:0.3s;
+}
+
+/* humo */
+.humo{
+position:absolute;
+font-size:20px;
+animation:smoke 2s forwards;
+}
+@keyframes smoke{
+0%{transform:translateY(0);opacity:1;}
+100%{transform:translateY(-80px);opacity:0;}
+}
+
+/* carta */
+#cartaFinal{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%) scaleY(0);
+transform-origin:top;
+background:white;
+padding:25px;
+border-radius:20px;
+width:85%;
+max-width:340px;
+box-shadow:0 20px 50px rgba(0,0,0,0.25);
+text-align:center;
+opacity:0;
+display:none;
+z-index:999;
+}
+
+/* animación */
+@keyframes abrir{
+0%{transform:translate(-50%,-50%) scaleY(0);opacity:0;}
+100%{transform:translate(-50%,-50%) scaleY(1);opacity:1;}
 }
 
 /* typing */
@@ -79,131 +130,139 @@ animation:blink 0.7s infinite;
 @keyframes blink{
 50%{border-color:transparent}
 }
-
-/* pastel */
-.cake{
-display:none;
-text-align:center;
-z-index:10;
-position:relative;
-}
-
-/* botón vela */
-.btn-vela{
-margin-top:10px;
-padding:10px 15px;
-background:#ff4da6;
-color:white;
-border:none;
-border-radius:20px;
-font-size:18px;
-cursor:pointer;
-}
-
-/* fuegos */
-.fire{
-position:absolute;
-font-size:20px;
-animation:boom 1s forwards;
-pointer-events:none;
-}
-@keyframes boom{
-to{transform:scale(2);opacity:0}
-}
 </style>
 </head>
 
 <body>
 
-<div id="main">
+<div id="inicio">
 
 <div class="box" onclick="abrir()">🎁</div>
 
-<div id="msg1" class="letter">
+<div id="msg1" class="msg">
 Esto fue hecho especialmente para ti 💖<br><br>
 Gracias por existir y ser tú ✨
 </div>
 
-<div id="cake" class="cake">
-<div style="font-size:60px;">🎂</div>
-<button class="btn-vela" onclick="vela()">Apagar velita 🔥</button>
+<div id="cake" style="display:none;">
+<div id="vela" class="vela">🎂</div>
+<button class="btn" onclick="apagarVela()">Apagar velita 🔥</button>
 </div>
 
-<div id="msg2" class="letter typing"></div>
-
 </div>
+
+<div id="cartaFinal" class="typing"></div>
 
 <audio id="music" src="musica.mp3"></audio>
 
 <script>
 
-const textoFinal = `
+const texto = `
 🎀 Feliz cumpleaños 🎀
 
-Hoy el mundo se siente un poquito mejor,
+Hoy el mundo se siente más bonito,
 porque es tu día, Señorita Monse ✨
 
-Eres una persona increíble,
-de esas que iluminan sin esfuerzo,
-que hacen que todo se sienta más ligero 💖
+Eres una persona increíble 💖
+de esas que iluminan sin esfuerzo
 
-No cambies nunca esa forma tan bonita de ser 🌸
+No cambies nunca 🌸
 
-Esto fue hecho con mucho cariño para ti 💛
+Esto fue hecho con mucho cariño 💛
 
 Atentamente B
 `;
 
-function escribirTexto(el, texto){
+function escribir(el, txt){
 let i=0;
-function escribir(){
-if(i < texto.length){
-el.innerHTML += texto.charAt(i);
+function t(){
+if(i<txt.length){
+el.innerHTML += txt.charAt(i);
 i++;
-setTimeout(escribir, 30);
+setTimeout(t,30);
 }
 }
-escribir();
+t();
 }
 
 function abrir(){
 document.querySelector(".box").style.display="none";
+document.getElementById("music").volume=1;
 document.getElementById("music").play().catch(()=>{});
-explosion();
 
 setTimeout(()=>{
 document.getElementById("msg1").style.display="block";
-activarCarta("msg1");
 },800);
 
 setTimeout(()=>{
 document.getElementById("cake").style.display="block";
-},2000);
+},1800);
 }
 
-function vela(){
-fuegos();
+/* 💨 apagar vela + humo + transición */
+function apagarVela(){
 
+let vela=document.getElementById("vela");
+
+/* ocultar vela */
+vela.style.opacity="0";
+
+/* humo */
+for(let i=0;i<5;i++){
+let h=document.createElement("div");
+h.className="humo";
+h.innerText="💨";
+h.style.left="50%";
+h.style.top="50%";
+document.body.appendChild(h);
+setTimeout(()=>h.remove(),2000);
+}
+
+/* bajar volumen */
+fadeOutMusic();
+
+/* transición */
 setTimeout(()=>{
-let carta = document.getElementById("msg2");
-
-carta.style.display = "block";
-
-/* 🔥 FORZAR ANIMACIÓN */
-activarCarta("msg2");
-
-carta.innerHTML="";
-escribirTexto(carta, textoFinal);
-
-},600);
+mostrarCarta();
+},1200);
 }
 
-/* 💥 FUNCIÓN CLAVE PARA ANIMACIÓN */
-function activarCarta(id){
-let el = document.getElementById(id);
-el.style.animation = "none";
-el.offsetHeight;
-el.style.animation = "openLetter 1.5s forwards";
+/* fade música */
+function fadeOutMusic(){
+let music=document.getElementById("music");
+let vol=1;
+let fade=setInterval(()=>{
+if(vol>0){
+vol-=0.05;
+music.volume=vol;
+}else{
+clearInterval(fade);
+music.pause();
+}
+},100);
+}
+
+function mostrarCarta(){
+
+/* blur fondo */
+document.getElementById("inicio").classList.add("blur");
+
+/* ocultar inicio */
+document.getElementById("inicio").style.display="none";
+
+/* mostrar carta */
+let carta=document.getElementById("cartaFinal");
+carta.style.display="block";
+
+/* animar */
+carta.style.animation="none";
+carta.offsetHeight;
+carta.style.animation="abrir 1.5s forwards";
+
+/* escribir */
+carta.innerHTML="";
+escribir(carta,texto);
+
 }
 
 /* partículas */
@@ -216,47 +275,10 @@ p.style.animationDuration=(5+Math.random()*5)+"s";
 document.body.appendChild(p);
 }
 
-/* explosión */
-function explosion(){
-for(let i=0;i<25;i++){
-let e=document.createElement("div");
-e.className="fire";
-e.innerText=["💖","✨","🎀"][Math.floor(Math.random()*3)];
-e.style.left="50%";
-e.style.top="50%";
-document.body.appendChild(e);
-
-let x=(Math.random()-0.5)*300;
-let y=(Math.random()-0.5)*300;
-
-e.animate([
-{transform:"translate(0,0)",opacity:1},
-{transform:`translate(${x}px,${y}px)`,opacity:0}
-],{duration:800});
-
-setTimeout(()=>e.remove(),800);
-}
-}
-
-/* fuegos */
-function fuegos(){
-for(let i=0;i<30;i++){
-let f=document.createElement("div");
-f.className="fire";
-f.innerText=["💖","✨","🌸"][Math.floor(Math.random()*3)];
-f.style.left=Math.random()*100+"vw";
-f.style.top=Math.random()*80+"vh";
-document.body.appendChild(f);
-setTimeout(()=>f.remove(),1000);
-}
-}
-
 /* pausa música */
-document.addEventListener("visibilitychange", function() {
-const music = document.getElementById("music");
-if (document.hidden) {
-music.pause();
-}
+document.addEventListener("visibilitychange", ()=>{
+let m=document.getElementById("music");
+if(document.hidden){m.pause();}
 });
 
 </script>
