@@ -17,7 +17,7 @@ font-family:'Segoe UI',cursive;
 overflow:hidden;
 }
 
-/* transición suave */
+/* transición */
 #inicio{
 text-align:center;
 transition:opacity 0.6s ease;
@@ -141,7 +141,7 @@ Gracias por existir y ser tú ✨
 
 <div id="cake" style="display:none;">
 <div id="vela" class="vela">🎂</div>
-<button class="btn" onclick="apagarVela()">Apagar velita 🔥</button>
+<button class="btn" onclick="iniciarSoplido()">Sopla para apagar la velita 💨</button>
 </div>
 
 </div>
@@ -195,12 +195,48 @@ document.getElementById("cake").style.display="block";
 },1800);
 }
 
-/* 💨 apagar vela */
-function apagarVela(){
+/* 🎤 SOPLIDO REAL */
+function iniciarSoplido(){
+
+let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+navigator.mediaDevices.getUserMedia({ audio: true })
+.then(stream => {
+
+const mic = audioContext.createMediaStreamSource(stream);
+const analyser = audioContext.createAnalyser();
+mic.connect(analyser);
+
+const data = new Uint8Array(analyser.frequencyBinCount);
+
+function detectar(){
+
+analyser.getByteFrequencyData(data);
+let volumen = data.reduce((a,b)=>a+b)/data.length;
+
+/* sensibilidad */
+if(volumen > 50){
+activarEfectoSoplido();
+return;
+}
+
+requestAnimationFrame(detectar);
+}
+
+detectar();
+
+})
+.catch(err => {
+console.log("Micrófono no permitido", err);
+/* fallback */
+activarEfectoSoplido();
+});
+}
+
+/* 💨 EFECTO SOPLIDO */
+function activarEfectoSoplido(){
 
 let vela=document.getElementById("vela");
-
-/* desaparecer vela */
 vela.style.opacity="0";
 
 /* humo */
@@ -214,7 +250,7 @@ document.body.appendChild(h);
 setTimeout(()=>h.remove(),2000);
 }
 
-/* bajar música pero NO apagar */
+/* música suave */
 fadeMusic();
 
 /* transición */
@@ -223,7 +259,7 @@ mostrarCarta();
 },1200);
 }
 
-/* 🎵 fade suave (NO se apaga) */
+/* 🎵 fade suave */
 function fadeMusic(){
 let music=document.getElementById("music");
 let vol=1;
@@ -237,28 +273,22 @@ clearInterval(fade);
 },100);
 }
 
-/* 💌 mostrar carta */
+/* 💌 carta */
 function mostrarCarta(){
 
 let inicio=document.getElementById("inicio");
-
-/* 🔥 AQUÍ ESTÁ EL FIX */
 inicio.style.opacity="0";
 inicio.style.pointerEvents="none";
 
-/* carta */
 let carta=document.getElementById("cartaFinal");
 carta.style.display="block";
 
-/* animación */
 carta.style.animation="none";
 carta.offsetHeight;
 carta.style.animation="abrir 1.5s forwards";
 
-/* escribir */
 carta.innerHTML="";
 escribir(carta,texto);
-
 }
 
 /* partículas */
@@ -271,7 +301,7 @@ p.style.animationDuration=(5+Math.random()*5)+"s";
 document.body.appendChild(p);
 }
 
-/* pausa música solo si cambias de app */
+/* pausa música */
 document.addEventListener("visibilitychange", ()=>{
 let m=document.getElementById("music");
 if(document.hidden){m.pause();}
