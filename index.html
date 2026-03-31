@@ -17,10 +17,10 @@ font-family:'Segoe UI',cursive;
 overflow:hidden;
 }
 
-/* blur fondo */
-.blur{
-filter:blur(8px);
-transition:0.5s;
+/* transición suave */
+#inicio{
+text-align:center;
+transition:opacity 0.6s ease;
 }
 
 /* partículas */
@@ -33,11 +33,6 @@ pointer-events:none;
 @keyframes floatUp{
 0%{transform:translateY(100vh)}
 100%{transform:translateY(-10vh)}
-}
-
-/* contenedor */
-#inicio{
-text-align:center;
 }
 
 /* regalo */
@@ -187,8 +182,9 @@ t();
 
 function abrir(){
 document.querySelector(".box").style.display="none";
-document.getElementById("music").volume=1;
-document.getElementById("music").play().catch(()=>{});
+let music=document.getElementById("music");
+music.volume=1;
+music.play().catch(()=>{});
 
 setTimeout(()=>{
 document.getElementById("msg1").style.display="block";
@@ -199,12 +195,12 @@ document.getElementById("cake").style.display="block";
 },1800);
 }
 
-/* 💨 apagar vela + humo + transición */
+/* 💨 apagar vela */
 function apagarVela(){
 
 let vela=document.getElementById("vela");
 
-/* ocultar vela */
+/* desaparecer vela */
 vela.style.opacity="0";
 
 /* humo */
@@ -218,8 +214,8 @@ document.body.appendChild(h);
 setTimeout(()=>h.remove(),2000);
 }
 
-/* bajar volumen */
-fadeOutMusic();
+/* bajar música pero NO apagar */
+fadeMusic();
 
 /* transición */
 setTimeout(()=>{
@@ -227,34 +223,34 @@ mostrarCarta();
 },1200);
 }
 
-/* fade música */
-function fadeOutMusic(){
+/* 🎵 fade suave (NO se apaga) */
+function fadeMusic(){
 let music=document.getElementById("music");
 let vol=1;
 let fade=setInterval(()=>{
-if(vol>0){
+if(vol>0.2){
 vol-=0.05;
 music.volume=vol;
 }else{
 clearInterval(fade);
-music.pause();
 }
 },100);
 }
 
+/* 💌 mostrar carta */
 function mostrarCarta(){
 
-/* blur fondo */
-document.getElementById("inicio").classList.add("blur");
+let inicio=document.getElementById("inicio");
 
-/* ocultar inicio */
-document.getElementById("inicio").style.display="none";
+/* 🔥 AQUÍ ESTÁ EL FIX */
+inicio.style.opacity="0";
+inicio.style.pointerEvents="none";
 
-/* mostrar carta */
+/* carta */
 let carta=document.getElementById("cartaFinal");
 carta.style.display="block";
 
-/* animar */
+/* animación */
 carta.style.animation="none";
 carta.offsetHeight;
 carta.style.animation="abrir 1.5s forwards";
@@ -275,7 +271,7 @@ p.style.animationDuration=(5+Math.random()*5)+"s";
 document.body.appendChild(p);
 }
 
-/* pausa música */
+/* pausa música solo si cambias de app */
 document.addEventListener("visibilitychange", ()=>{
 let m=document.getElementById("music");
 if(document.hidden){m.pause();}
