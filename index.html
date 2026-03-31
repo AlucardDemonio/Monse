@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Para Monse 🎀</title>
 
 <style>
@@ -16,16 +17,19 @@ font-family:'Segoe UI',cursive;
 overflow:hidden;
 }
 
-/* fondo estrellas */
-.star{
+/* luz suave */
+body::before{
+content:"";
 position:absolute;
-font-size:10px;
-color:white;
-animation:twinkle 2s infinite alternate;
+width:200%;
+height:200%;
+background:radial-gradient(circle,rgba(255,255,255,0.2),transparent 60%);
+animation:moveLight 10s infinite linear;
 }
-@keyframes twinkle{
-from{opacity:0.3}
-to{opacity:1}
+@keyframes moveLight{
+0%{transform:translate(-20%,-20%)}
+50%{transform:translate(20%,20%)}
+100%{transform:translate(-20%,-20%)}
 }
 
 /* partículas */
@@ -41,39 +45,53 @@ animation:floatUp linear infinite;
 
 /* caja */
 .box{
-width:150px;
-height:150px;
+width:120px;
+height:120px;
 background:#ff8fc1;
 border-radius:20px;
 display:flex;
 justify-content:center;
 align-items:center;
 cursor:pointer;
-font-size:50px;
+font-size:40px;
 color:white;
 box-shadow:0 10px 30px rgba(0,0,0,0.2);
 animation:float 2s infinite;
+z-index:2;
 }
 @keyframes float{50%{transform:translateY(-10px)}}
 
-/* carta */
+/* carta animada */
 .letter{
 display:none;
 background:white;
 padding:20px;
 border-radius:20px;
-width:300px;
+width:85%;
+max-width:320px;
 box-shadow:0 10px 30px rgba(0,0,0,0.15);
 font-style:italic;
 text-align:center;
-animation:fade 1s ease;
+font-size:14px;
+transform:scaleY(0);
+transform-origin:top;
+animation:openLetter 0.8s forwards;
 }
-@keyframes fade{
-from{opacity:0;transform:translateY(20px)}
-to{opacity:1;transform:translateY(0)}
+@keyframes openLetter{
+to{transform:scaleY(1)}
 }
 
-/* nombre brillo */
+/* texto escribiéndose */
+.typing{
+white-space:pre-line;
+border-right:2px solid pink;
+animation:blink 0.7s infinite;
+}
+@keyframes blink{
+50%{border-color:transparent}
+}
+
+/* nombre brillante */
 .name{
 background:linear-gradient(90deg,#ff4da6,#ff99cc,#ff4da6);
 background-size:200%;
@@ -88,9 +106,17 @@ to{background-position:200%}
 /* pastel */
 .cake{
 display:none;
-font-size:60px;
+font-size:50px;
 margin-top:15px;
 cursor:pointer;
+text-align:center;
+}
+
+/* texto clic */
+.click-text{
+font-size:clamp(20px, 5vw, 32px);
+text-align:center;
+margin-top:10px;
 }
 
 /* fuegos */
@@ -117,10 +143,11 @@ Gracias por existir y ser tú ✨
 </div>
 
 <div id="cake" class="cake" onclick="vela()">
-🎂<br><small>Clic en la vela 🔥</small>
+🎂
+<div class="click-text">Clic en la vela 🔥</div>
 </div>
 
-<div id="msg2" class="letter"></div>
+<div id="msg2" class="letter typing"></div>
 
 </div>
 
@@ -129,27 +156,37 @@ Gracias por existir y ser tú ✨
 <script>
 
 const textoFinal = `
-🎀 Feliz cumpleaños 🎀 <br><br>
+🎀 Feliz cumpleaños 🎀
 
-Hoy el mundo se siente un poquito mejor,<br>
-porque es tu día, <span class="name">Señorita Monse</span> ✨<br><br>
+Hoy el mundo se siente un poquito mejor,
+porque es tu día, Señorita Monse ✨
 
-Eres una persona increíble,<br>
-de esas que iluminan sin esfuerzo,<br>
-que hacen que todo se sienta más ligero 💖<br><br>
+Eres una persona increíble,
+de esas que iluminan sin esfuerzo,
+que hacen que todo se sienta más ligero 💖
 
-No cambies nunca esa forma tan bonita de ser 🌸<br><br>
+No cambies nunca esa forma tan bonita de ser 🌸
 
-Esto fue hecho con mucho cariño para ti 💛<br><br>
+Esto fue hecho con mucho cariño para ti 💛
 
 Atentamente B
 `;
 
+function escribirTexto(elemento, texto, velocidad=35){
+let i=0;
+function escribir(){
+if(i < texto.length){
+elemento.innerHTML += texto.charAt(i);
+i++;
+setTimeout(escribir, velocidad);
+}
+}
+escribir();
+}
+
 function abrir(){
 document.querySelector(".box").style.display="none";
-
 document.getElementById("music").play().catch(()=>{});
-
 explosion();
 
 setTimeout(()=>{
@@ -167,7 +204,8 @@ fuegos();
 setTimeout(()=>{
 let carta=document.getElementById("msg2");
 carta.style.display="block";
-carta.innerHTML=textoFinal;
+carta.innerHTML="";
+escribirTexto(carta, textoFinal);
 },1200);
 }
 
@@ -181,17 +219,7 @@ p.style.animationDuration=(5+Math.random()*5)+"s";
 document.body.appendChild(p);
 }
 
-/* estrellas */
-for(let i=0;i<30;i++){
-let s=document.createElement("div");
-s.className="star";
-s.innerText="✨";
-s.style.left=Math.random()*100+"vw";
-s.style.top=Math.random()*100+"vh";
-document.body.appendChild(s);
-}
-
-/* explosión regalo */
+/* explosión */
 function explosion(){
 for(let i=0;i<25;i++){
 let e=document.createElement("div");
@@ -213,7 +241,7 @@ setTimeout(()=>e.remove(),800);
 }
 }
 
-/* fuegos finales */
+/* fuegos */
 function fuegos(){
 for(let i=0;i<30;i++){
 let f=document.createElement("div");
@@ -225,6 +253,16 @@ document.body.appendChild(f);
 setTimeout(()=>f.remove(),1000);
 }
 }
+
+/* pausa música */
+document.addEventListener("visibilitychange", function() {
+const music = document.getElementById("music");
+if (document.hidden) {
+music.pause();
+} else {
+music.play().catch(()=>{});
+}
+});
 
 </script>
 
